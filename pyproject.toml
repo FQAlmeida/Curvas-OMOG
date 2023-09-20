@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "curvas-omog"
+version = "0.1.0"
+description = ""
+authors = ["Otávio Almeida <otavioalmeida650@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "^2.5.2"
+reloadium = "^1.2.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.290"
+taskipy = "^1.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 118
+show-source = true
+include = ["**/*.py", "**/*.pyi", "**/pyproject.toml", "*.ipynb"]
+select = [
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "UP",   # pyupgrade
+  "N",    # pep8-naming
+  "C90",  # mccabe
+  "I",    # isort
+  "PERF", # perflint
+  "NPY",  # numpy
+  "PL",   # pylint
+  "RUF",  # ruff
+]
+
+[tool.taskipy.tasks]
+test = "pytest tests/"
+lint = "poetry run lint"
+dev = "reloadium run curvas_omog/__init__.py"
