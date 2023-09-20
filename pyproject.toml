@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 pygame = "^2.5.2"
 reloadium = "^1.2.1"
+pygame-gui = "^0.6.9"
 
 
 [tool.poetry.group.dev.dependencies]
