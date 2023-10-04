@@ -161,6 +161,12 @@ def draw_texts(state: EnvironmentState):
         "green",
     )
     state.screen.blit(active_curve_text, (20, 40))
+    qtd_points_text = state.font.render(
+        f"Qtd Points: {len(state.active_curve.points)}",
+        True,
+        "green",
+    )
+    state.screen.blit(qtd_points_text, (20, 60))
 
 
 def draw(state: EnvironmentState):
@@ -178,9 +184,7 @@ def draw(state: EnvironmentState):
     curve_points = []
     t_step = 0.01
     n = len(state.active_curve.points)
-    knot_vector = np.array(
-        [*[i/(n + K + 3) for i in range(n + K + 2)]]
-    )
+    knot_vector = np.linspace(t_step, n * t_step * 9, n + K + 2)
     if n > K:
         for t in np.arange(0, 1 + t_step, t_step):
             curve_point = de_boor(t, 0, K, state.active_curve.points, knot_vector)
@@ -191,6 +195,12 @@ def draw(state: EnvironmentState):
     ):
         pygame.draw.line(state.screen, WHITE, point1, point2, 1)
     draw_texts(state)
+    qtd_points_text = state.font.render(
+        f"Qtd Points Knot: {len(knot_vector)}",
+        True,
+        "green",
+    )
+    state.screen.blit(qtd_points_text, (20, 80))
     pygame.display.flip()
 
 
