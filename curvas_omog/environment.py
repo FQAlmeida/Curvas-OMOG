@@ -52,6 +52,8 @@ def de_boor(
     if k == 0:
         return control_points[i, :-1]
     alpha = (t - knot_vector[i]) / (knot_vector[i + k] - knot_vector[i])
+    if alpha == np.Infinity:
+        print(alpha, t, i, k)
     p1 = de_boor(t, i, k - 1, control_points, knot_vector)
     p2 = de_boor(t, i + 1, k - 1, control_points, knot_vector)
 
@@ -182,25 +184,33 @@ def draw(state: EnvironmentState):
         pygame.draw.line(state.screen, GREY, point1[:-1], point2[:-1], 1)
 
     curve_points = []
-    t_step = 0.01
     n = len(state.active_curve.points)
-    knot_vector = np.linspace(t_step, n * t_step * 9, n + K + 2)
-    if n > K:
-        for t in np.arange(0, 1 + t_step, t_step):
+    if K + 3 < n:
+        knot_vector = knot_vector = np.concatenate(
+            (
+                np.zeros(K),  # Clamped start
+                np.linspace(1, n - K, n - K),  # Interior knots
+                np.full(shape=K, fill_value=K - 1),  # Clamped end
+            )
+        )
+        print(knot_vector)
+        t_step = 0.01
+        for t in np.arange(K - 1, n + 1, t_step):
             curve_point = de_boor(t, 0, K, state.active_curve.points, knot_vector)
             curve_points.append(curve_point)
+        qtd_points_text = state.font.render(
+            f"Qtd Points Knot: {len(knot_vector)}",
+            True,
+            "green",
+        )
+        state.screen.blit(qtd_points_text, (20, 80))
+    print(curve_points)
     for point1, point2 in (
         (p1, curve_points[p1_index + 1])
         for p1_index, p1 in enumerate(curve_points[:-1])
     ):
         pygame.draw.line(state.screen, WHITE, point1, point2, 1)
     draw_texts(state)
-    qtd_points_text = state.font.render(
-        f"Qtd Points Knot: {len(knot_vector)}",
-        True,
-        "green",
-    )
-    state.screen.blit(qtd_points_text, (20, 80))
     pygame.display.flip()
 
 
