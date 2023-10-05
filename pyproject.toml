@@ -12,6 +12,7 @@ reloadium = "^1.2.1"
 pygame-gui = "^0.6.9"
 cupy-cuda12x = "^12.2.0"
 numpy = ">=1.21,<1.26"
+scipy = "^1.11.3"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -4,7 +4,7 @@ import numpy as np
 import pygame
 from numpy.typing import NDArray
 
-SCREEN_SIZE = (1280, 720)
+SCREEN_SIZE = (1800, 1000)
 POINT_RADIUS = 5
 UI_INITIAL, UI_SIZE = (0, 0), (300, SCREEN_SIZE[1])
 GREY = pygame.color.Color(150, 150, 150, 1)

@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pygame
 from numpy.typing import NDArray
+from scipy import interpolate
 
 from curvas_omog.settings import (
     GREEN,
@@ -52,9 +53,9 @@ def de_boor(
     if k == 0:
         return control_points[i, :-1]
     alpha = (t - knot_vector[i]) / (knot_vector[i + k] - knot_vector[i])
-    if alpha == np.Infinity:
-        print(alpha, t, i, k)
     p1 = de_boor(t, i, k - 1, control_points, knot_vector)
+    if alpha == np.Infinity:
+        return p1 / control_points[i, -1]
     p2 = de_boor(t, i + 1, k - 1, control_points, knot_vector)
 
     # Interpolate with weights
@@ -64,6 +65,31 @@ def de_boor(
     return weighted_interpolated_point
 
 
+def boor(t, degree, i, knots):
+    if degree == 0:
+        return 1.0 if knots[i] <= t < knots[i + 1] else 0.0
+
+    if knots[i + degree] == knots[i]:
+        c1 = 0.0
+    else:
+        c1 = (
+            (t - knots[i])
+            / (knots[i + degree] - knots[i])
+            * boor(t, degree - 1, i, knots)
+        )
+
+    if knots[i + degree + 1] == knots[i + 1]:
+        c2 = 0.0
+    else:
+        c2 = (
+            (knots[i + degree + 1] - t)
+            / (knots[i + degree + 1] - knots[i + 1])
+            * boor(t, degree - 1, i + 1, knots)
+        )
+
+    return c1 + c2
+
+
 @dataclass
 class EnvironmentState:
     screen: pygame.Surface
@@ -71,10 +97,14 @@ class EnvironmentState:
     font: pygame.font.Font
     is_running: bool
     dragging_id: int | None
+
     active_curve_index: int
     curves: list[Curve] = field(default_factory=list)
 
     should_delete_on_collide = False
+    should_snap = True
+    should_draw_support_lines = True
+    should_draw_support_points = True
 
     def add_curve(self, curve: Curve):
         self.curves.append(curve)
@@ -102,7 +132,8 @@ def is_click_colliding(
         np.sqrt(np.sum(np.square(np.subtract(np_pos, points[:, :-1])), axis=1))
     )
     if len(indexes := np.argwhere(distances < 2 * POINT_RADIUS)) > 0:
-        return indexes[0]
+        rindex = indexes[0, 0]
+        return rindex + (0 if ignore_id is None else 0 if ignore_id > rindex else 1)
     return None
 
 
@@ -113,41 +144,71 @@ def handle_event(
     if event.type == pygame.QUIT:
         state.is_running = False
     pos = pygame.mouse.get_pos()
-    pos_point = np.array((*pos, 1))
     if event.type == pygame.MOUSEBUTTONUP:
-        if (
-            pos_index := is_click_colliding(
-                pos, state.curves[state.active_curve_index].points, state.dragging_id
+        handle_mouse_btn_up(state, pos)
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        handle_mouse_btn_down(state, pos)
+    if event.type == pygame.KEYUP:
+        handle_keybd_up(event, state)
+
+
+def handle_keybd_up(event: pygame.Event, state: EnvironmentState):
+    match event.key:
+        case pygame.K_KP1:
+            state.should_delete_on_collide = not state.should_delete_on_collide
+        case pygame.K_KP3:
+            state.should_snap = not state.should_snap
+        case pygame.K_KP4:
+            state.should_draw_support_lines = not state.should_draw_support_lines
+        case pygame.K_KP5:
+            state.should_draw_support_points = not state.should_draw_support_points
+        case pygame.K_KP6:
+            state.curves = [Curve()]
+            state.active_curve_index = 0
+            rng = np.random.default_rng(1337)
+            state.active_curve.points = rng.random((10000, 3)) * (*SCREEN_SIZE, 1)
+        case pygame.K_KP2:
+            state.curves = [Curve()]
+            state.active_curve_index = 0
+
+
+def handle_mouse_btn_up(state: EnvironmentState, pos: tuple[int, int]):
+    pos_point = np.array((*pos, 1))
+    if (
+        pos_index := is_click_colliding(
+            pos, state.curves[state.active_curve_index].points, state.dragging_id
+        )
+    ) is None:
+        if not np.isin(
+            state.curves[state.active_curve_index].points[:, :-1], pos_point
+        ).any():
+            state.curves[state.active_curve_index].points = np.concatenate(
+                (state.curves[state.active_curve_index].points, [pos_point]),
+                axis=0,
             )
-        ) is None:
-            if not np.isin(
-                state.curves[state.active_curve_index].points[:, :-1], pos_point
-            ).any():
-                state.curves[state.active_curve_index].points = np.concatenate(
-                    (state.curves[state.active_curve_index].points, [pos_point]),
-                    axis=0,
-                )
-        elif (
-            state.dragging_id is not None
-            and state.dragging_id != pos_index
-            and state.should_delete_on_collide
-        ):
+    elif state.dragging_id is not None and state.dragging_id != pos_index:
+        if state.should_delete_on_collide:
             state.curves[state.active_curve_index].points = state.curves[
                 state.active_curve_index
             ].points[
                 np.arange(len(state.curves[state.active_curve_index].points))
                 != state.dragging_id
             ]
-        state.dragging_id = None
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        if (
-            pos_index := is_click_colliding(
-                pos, state.curves[state.active_curve_index].points
-            )
-        ) is not None:
-            state.dragging_id = pos_index
-    if event.type == pygame.KEYUP and event.key == pygame.K_KP1:
-        state.should_delete_on_collide = not state.should_delete_on_collide
+        elif state.should_snap:
+            state.active_curve.points[state.dragging_id] = state.active_curve.points[
+                pos_index
+            ]
+
+    state.dragging_id = None
+
+
+def handle_mouse_btn_down(state: EnvironmentState, pos: tuple[int, int]):
+    if (
+        pos_index := is_click_colliding(
+            pos, state.curves[state.active_curve_index].points
+        )
+    ) is not None:
+        state.dragging_id = pos_index
 
 
 def draw_texts(state: EnvironmentState):
@@ -169,47 +230,61 @@ def draw_texts(state: EnvironmentState):
         "green",
     )
     state.screen.blit(qtd_points_text, (20, 60))
+    should_snap_text = state.font.render(
+        f"Should Snap in Place: {state.should_snap}",
+        True,
+        "green" if state.should_snap else "red",
+    )
+    state.screen.blit(should_snap_text, (20, 80))
+    should_draw_support_text = state.font.render(
+        f"Should Draw Support Lines: {state.should_draw_support_lines}",
+        True,
+        "green" if state.should_draw_support_lines else "red",
+    )
+    state.screen.blit(should_draw_support_text, (20, 100))
+    should_draw_support_points_text = state.font.render(
+        f"Should Draw Support Points: {state.should_draw_support_points}",
+        True,
+        "green" if state.should_draw_support_points else "red",
+    )
+    state.screen.blit(should_draw_support_points_text, (20, 120))
 
 
 def draw(state: EnvironmentState):
     state.screen.fill("black")
 
-    for point in state.active_curve.points:
-        pygame.draw.circle(state.screen, GREEN, point[:-1], POINT_RADIUS)
+    if state.should_draw_support_points:
+        for point in state.active_curve.points:
+            pygame.draw.circle(state.screen, GREEN, point[:-1], POINT_RADIUS)
 
-    for point1, point2 in (
-        (p1, state.active_curve.points[p1_index + 1])
-        for p1_index, p1 in enumerate(state.active_curve.points[:-1])
-    ):
-        pygame.draw.line(state.screen, GREY, point1[:-1], point2[:-1], 1)
+    if state.should_draw_support_lines:
+        for point1, point2 in (
+            (p1, state.active_curve.points[p1_index + 1])
+            for p1_index, p1 in enumerate(state.active_curve.points[:-1])
+        ):
+            pygame.draw.line(state.screen, GREY, point1[:-1], point2[:-1], 1)
 
-    curve_points = []
     n = len(state.active_curve.points)
-    if K + 3 < n:
-        knot_vector = knot_vector = np.concatenate(
-            (
-                np.zeros(K),  # Clamped start
-                np.linspace(1, n - K, n - K),  # Interior knots
-                np.full(shape=K, fill_value=K - 1),  # Clamped end
-            )
+    if n > K:
+        knot_vector = np.array(
+            [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int"
         )
-        print(knot_vector)
-        t_step = 0.01
-        for t in np.arange(K - 1, n + 1, t_step):
-            curve_point = de_boor(t, 0, K, state.active_curve.points, knot_vector)
-            curve_points.append(curve_point)
-        qtd_points_text = state.font.render(
-            f"Qtd Points Knot: {len(knot_vector)}",
-            True,
-            "green",
-        )
-        state.screen.blit(qtd_points_text, (20, 80))
-    print(curve_points)
-    for point1, point2 in (
-        (p1, curve_points[p1_index + 1])
-        for p1_index, p1 in enumerate(curve_points[:-1])
-    ):
-        pygame.draw.line(state.screen, WHITE, point1, point2, 1)
+        u = np.linspace(0, (n - K), 10000)
+        curve_points = np.array(
+            interpolate.splev(u, (knot_vector, state.active_curve.points.T, K))
+        ).T
+
+        for point1, point2 in (
+            (p1, curve_points[p1_index + 1])
+            for p1_index, p1 in enumerate(curve_points[:-1])
+        ):
+            pygame.draw.line(state.screen, WHITE, point1[:-1], point2[:-1], 1)
+        # qtd_points_text = state.font.render(
+        #     f"Qtd Points Knot: {len(knot_vector)}",
+        #     True,
+        #     "green",
+        # )
+        # state.screen.blit(qtd_points_text, (100, 20))
     draw_texts(state)
     pygame.display.flip()
 
@@ -225,7 +300,7 @@ class Environment:
             pygame.font.init()
 
         font = pygame.font.SysFont(["comic sans"], 16)
-        screen = pygame.display.set_mode(SCREEN_SIZE)
+        screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED)
         clock = pygame.time.Clock()
         is_running = True
 
