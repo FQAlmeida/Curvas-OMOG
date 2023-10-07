@@ -118,7 +118,7 @@ def is_click_colliding(
     pos: tuple[float, float],
     points: PointType,
     ignore_id: int | None = None,
-):
+) -> int | None:
     if not points.any():
         return None
     if ignore_id is not None:
@@ -152,7 +152,7 @@ def handle_event(
         handle_keybd_up(event, state)
 
 
-def handle_keybd_up(event: pygame.Event, state: EnvironmentState):
+def handle_keybd_up(event: pygame.event.Event, state: EnvironmentState):
     match event.key:
         case pygame.K_KP1:
             state.should_delete_on_collide = not state.should_delete_on_collide

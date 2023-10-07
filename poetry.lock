@@ -42,6 +42,73 @@ stylecheck = ["autopep8 (==1.5.5)", "flake8 (==3.8.4)", "mypy (==1.4.1)", "pbr (
 test = ["hypothesis (>=6.37.2,<6.55.0)", "pytest (>=7.2)"]
 
 [[package]]
+name = "cython"
+version = "3.0.3"
+description = "The Cython compiler for writing C extensions in the Python language."
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "Cython-3.0.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:85073ab414ff432d2a39d36cb49c39ce69f30b53daccc7699bfad0ce3d1b539a"},
+    {file = "Cython-3.0.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:30c1d9bd2bcb9b1a195dd23b359771857df8ebd4a1038fb37dd155d3ea38c09c"},
+    {file = "Cython-3.0.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9296f332523d5c550ebae694483874d255264cff3281372f25ea5f2739b96651"},
+    {file = "Cython-3.0.3-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d52ed47edbf48392dd0f419135e7ff59673f6b32d27d3ffc9e61a515571c050d"},
+    {file = "Cython-3.0.3-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:6f63e959d13775472d37e731b2450d120e8db87e956e2de74475e8f17a89b1fb"},
+    {file = "Cython-3.0.3-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:22d268c3023f405e13aa0c1600389794694ab3671614f8e782d89a1055da0858"},
+    {file = "Cython-3.0.3-cp310-cp310-win32.whl", hash = "sha256:51850f277660f67171135515e45edfc8815f723ff20768e39cb9785b2671062f"},
+    {file = "Cython-3.0.3-cp310-cp310-win_amd64.whl", hash = "sha256:bff1fec968a6b2ca452ae9bff6d6d0bf8486427d4d791e85543240266b6915e0"},
+    {file = "Cython-3.0.3-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:587d664ff6bd5b03611ddc6ef320b7f8677d824c45d15553f16a69191a643843"},
+    {file = "Cython-3.0.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3192cd780435fca5ae5d79006b48cbf0ea674853b5a7b0055a122045bff9d84e"},
+    {file = "Cython-3.0.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f7578b59ffd0d9c95ae6f7ae852309918915998b7fe0ed2f8725a683de8da276"},
+    {file = "Cython-3.0.3-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6f05889eb1b5a95a7adf97303279c2d13819ff62292e10337e6c940dbf570b5d"},
+    {file = "Cython-3.0.3-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:1d3416c24a1b7bf3a2d9615a7f9f12b00fac0b94fb2e61449e0c1ecf20d6ed52"},
+    {file = "Cython-3.0.3-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:4cc0f7244da06fdc6a4a7240df788805436b6fb7f20edee777eb77777d9d2eb1"},
+    {file = "Cython-3.0.3-cp311-cp311-win32.whl", hash = "sha256:845e24ee70c204062e03f813114751387abf454b29410336797582e04abbc07b"},
+    {file = "Cython-3.0.3-cp311-cp311-win_amd64.whl", hash = "sha256:e3ad109bdf40f55318e001cad12bcc00e8119569b49f72e442c082355617b036"},
+    {file = "Cython-3.0.3-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:14b898ec2fdeea68f81bd3838b035800b173b59ed532674f65a82724bab35d3b"},
+    {file = "Cython-3.0.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:188705eeae094bb716bc3e3d0da4e13469f0a0de803b65dfd63fe7eb78ec6173"},
+    {file = "Cython-3.0.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9eb128fa40305f18eaa4d8dd0980033b92db86aada927181d3c3d561aa0634db"},
+    {file = "Cython-3.0.3-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:80bd3167e689419cdaf7ede0d20a9f126b9698a43b1f8d3e8f54b970c7a6cd07"},
+    {file = "Cython-3.0.3-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:d0c7b315f6feb75e2c949dc7816da5626cdca097fea1c0d9f4fdb20d2f4ffc2a"},
+    {file = "Cython-3.0.3-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:db9d4de4cd6cd3ad1c3f455aae877ad81a92b92b7cbb01dfb32b6306b873932b"},
+    {file = "Cython-3.0.3-cp312-cp312-win32.whl", hash = "sha256:be1a679c7ad90813f9206c9d62993f3bd0cba9330668e97bb3f70c87ae94d5f5"},
+    {file = "Cython-3.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:fa08259f4d176b86561eeff6954f9924099c0b0c128fc2cbfc18343c068ad8ca"},
+    {file = "Cython-3.0.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:056340c49bf7861eb1eba941423e67620b7c85e264e9a5594163f1d1e8b95acc"},
+    {file = "Cython-3.0.3-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3cfbd60137f6fca9c29101d7517d4e341e0fd279ffc2489634e5e2dd592457c2"},
+    {file = "Cython-3.0.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:66b7e71c16cab0814945014ffb101ead2b173259098bbb1b8138e7a547da3709"},
+    {file = "Cython-3.0.3-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:42b1ff0e19fb4d1fe68b60f55d46942ed246a323f6bbeec302924b78b4c3b637"},
+    {file = "Cython-3.0.3-cp36-cp36m-musllinux_1_1_aarch64.whl", hash = "sha256:5d6af87a787d5ce063e28e508fee34755a945e438c68ecda50eb4ea34c30e13f"},
+    {file = "Cython-3.0.3-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:0147a31fb73a063bb7b6c69fd843c1a2bad18f326f58048d4ee5bdaef87c9fbf"},
+    {file = "Cython-3.0.3-cp36-cp36m-win32.whl", hash = "sha256:84084fa05cf9a67a85818fa72a741d1cae2e3096551158730730a3bafc3b2f52"},
+    {file = "Cython-3.0.3-cp36-cp36m-win_amd64.whl", hash = "sha256:8a6a9a2d98758768052e4ac1bea4ebc20fae69b4c19cb2bc5457c9174532d302"},
+    {file = "Cython-3.0.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:94fa403de3a413cd41b8eb4ddb4adcbd66aa0a64f9a84d1c5f696c93572c83aa"},
+    {file = "Cython-3.0.3-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e729fd633a5225570c5480b36e7c530c8a82e2ab6d2944ddbe1ddfff5bf181b1"},
+    {file = "Cython-3.0.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:59bf689409b0e51ef673e3dd0348727aef5b67e40f23f806be64c49cee321de0"},
+    {file = "Cython-3.0.3-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f0ac9ec822fad010248b4a59ac197975de38c95378d0f13201c181dd9b0a2624"},
+    {file = "Cython-3.0.3-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:8e78fc42a6e846941d23aba1aca587520ad38c8970255242f08f9288b0eeba85"},
+    {file = "Cython-3.0.3-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:e40ac8bd6d11355d354bb4975bb88f6e923ba30f85e38f1f1234b642634e4fc4"},
+    {file = "Cython-3.0.3-cp37-cp37m-win32.whl", hash = "sha256:77a920ae19fa1db5adb8a618cebb095ca4f56adfbf9fc32cb7008a590607b62b"},
+    {file = "Cython-3.0.3-cp37-cp37m-win_amd64.whl", hash = "sha256:0630527a8c9e8fed815c38524e418dab713f5d66f6ac9dc2151b41f3a7727304"},
+    {file = "Cython-3.0.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:4e956383e57d00b1fa6449b5ec03b9fa5fce2afd41ef3e518bee8e7c89f1616c"},
+    {file = "Cython-3.0.3-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1ec9e15b821ef7e3c38abe9e4df4e6dda7af159325bc358afd5a3c2d5027ccfe"},
+    {file = "Cython-3.0.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:18f4fb7cc6ad8e99e8f387ebbcded171a701bfbfd8cd3fd46156bf44bb4fd968"},
+    {file = "Cython-3.0.3-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b50f4f75f89e7eef2ed9c9b60746bc4ab1ba2bc0dff64587133db2b63e068f09"},
+    {file = "Cython-3.0.3-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:5545d20d7a1c0cf17559152f7f4a465c3d5caace82dd051f82e2d753ae9fd956"},
+    {file = "Cython-3.0.3-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:1571b045ec1cb15c152c3949f3bd53ee0fa66d434271ea3d225658d99b7e721a"},
+    {file = "Cython-3.0.3-cp38-cp38-win32.whl", hash = "sha256:3db04801fd15d826174f63ff45878d4b1e62aff27cf1ea96b186581052d24446"},
+    {file = "Cython-3.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:75d42c8423ab299396f3c938445730600e32e4a2f0298f6f9df4d4a698fe8e16"},
+    {file = "Cython-3.0.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:48bae87b657009e5648c21d4a92de9f3dc6fed3e35e92957fa8a07a18cea2313"},
+    {file = "Cython-3.0.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6ccde14ddc4b424435cb5722aa1529c254bbf3611e1ad9baea12d25e9c049361"},
+    {file = "Cython-3.0.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c8e5afcc19861c3b22faafbe906c7e1b23f0595073ac10e21a80dec9e60e7dd"},
+    {file = "Cython-3.0.3-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0e1c9385e99eef299396b9a1e39790e81819446c6a83e249f6f0fc71a64f57a0"},
+    {file = "Cython-3.0.3-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:d49d20db27c9cfcf45bb1fbf68f777bd1e04e4b949e4e5172d9ee8c9419bc792"},
+    {file = "Cython-3.0.3-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:d12591939af93c59defea6fc5320ca099eb44e4694e3b2cbe72fb24406079b97"},
+    {file = "Cython-3.0.3-cp39-cp39-win32.whl", hash = "sha256:9f40b27545d583fd7df0d3c1b76b3bcaf8a72dbd8d83d5486af2384015660de8"},
+    {file = "Cython-3.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:74ba0f11b384246b7965169f08bf67d426e4957fee5c165571340217a9b43cfc"},
+    {file = "Cython-3.0.3-py2.py3-none-any.whl", hash = "sha256:176953a8a2532e34a589625a40c934ff339088f2bf4ddaa2e5cb77b05ca0c25c"},
+    {file = "Cython-3.0.3.tar.gz", hash = "sha256:327309301b01f729f173a94511cb2280c87ba03c89ed428e88f913f778245030"},
+]
+
+[[package]]
 name = "fastrlock"
 version = "0.8.2"
 description = "Fast, re-entrant optimistic lock implemented in Cython"
@@ -217,6 +284,8 @@ files = [
     {file = "pygame-2.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0e24d05184e4195fe5ebcdce8b18ecb086f00182b9ae460a86682d312ce8d31f"},
     {file = "pygame-2.5.2-cp311-cp311-win32.whl", hash = "sha256:f02c1c7505af18d426d355ac9872bd5c916b27f7b0fe224749930662bea47a50"},
     {file = "pygame-2.5.2-cp311-cp311-win_amd64.whl", hash = "sha256:6d58c8cf937815d3b7cdc0fa9590c5129cb2c9658b72d00e8a4568dea2ff1d42"},
+    {file = "pygame-2.5.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:1a2a43802bb5e89ce2b3b775744e78db4f9a201bf8d059b946c61722840ceea8"},
+    {file = "pygame-2.5.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:1c289f2613c44fe70a1e40769de4a49c5ab5a29b9376f1692bb1a15c9c1c9bfa"},
     {file = "pygame-2.5.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:074aa6c6e110c925f7f27f00c7733c6303407edc61d738882985091d1eb2ef17"},
     {file = "pygame-2.5.2-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fe0228501ec616779a0b9c4299e837877783e18df294dd690b9ab0eed3d8aaab"},
     {file = "pygame-2.5.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:31648d38ecdc2335ffc0e38fb18a84b3339730521505dac68514f83a1092e3f4"},
@@ -341,6 +410,41 @@ pygame-ce = ">=2.1.4"
 python-i18n = ">=0.3.9"
 
 [[package]]
+name = "pyobjc-core"
+version = "10.0"
+description = "Python<->ObjC Interoperability Module"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pyobjc-core-10.0.tar.gz", hash = "sha256:3dd0a7b3acd7e0b8ffd3f5331b29a3aaebe79a03323e61efeece38627a6020b3"},
+    {file = "pyobjc_core-10.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:61ea5112a672d21b5b0ed945778707c655b17c400672aef144705674c4b95499"},
+    {file = "pyobjc_core-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:99b72cda4593e0c66037b25a178f2bcc6efffb6d5d9dcd477ecca859a1f9ae8e"},
+    {file = "pyobjc_core-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:2843ca32e86a01ccee67d7ad82a325ddd72d754929d1f2c0d96bc8741dc9af09"},
+    {file = "pyobjc_core-10.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a886b9d2a93210cab4ae72601ab005ca6f627fa2f0cc62c43c03ef1405067a11"},
+    {file = "pyobjc_core-10.0-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:166666b5c380a49e8aa1ad1dda978c581e29a00703d82203216f3c65a3f397a4"},
+    {file = "pyobjc_core-10.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:198a0360f64e4c0148eed07b42d1de0545f56c498c356d1d5524422bb3352907"},
+]
+
+[[package]]
+name = "pyobjc-framework-cocoa"
+version = "10.0"
+description = "Wrappers for the Cocoa frameworks on macOS"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pyobjc-framework-Cocoa-10.0.tar.gz", hash = "sha256:723421eff4f59e4ca9a9bb8ec6dafbc0f778141236fa85a49fdd86732d58a74c"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:80c22a8fc7f085746d9cd222adeca8fe6790e3e6ad7eed5fc70b32aa87c10adb"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:0187cba228976a45f41116c74aab079b64bacb3ffc3c886a4bd8e472bf9be581"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:a81dabdc40268591e3196087388e680c6570fed1b521df9b04733cb3ece0414e"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:0a23db9ab99e338e1d8a268d873cc15408f78cec9946308393ca2241820c18b8"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:a3c66fe56a5156a818fbf056c589f8140a5fdb1dcb1f1075cb34d3755474d900"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:bf9020e85ead569021b15272dcd90207aab6c754093f520b11d4210a2efbdd06"},
+]
+
+[package.dependencies]
+pyobjc-core = ">=10.0"
+
+[[package]]
 name = "python-i18n"
 version = "0.3.9"
 description = "Translation library for Python"
@@ -356,27 +460,27 @@ yaml = ["pyyaml (>=3.10)"]
 
 [[package]]
 name = "reloadium"
-version = "1.2.1"
+version = "1.3.0"
 description = "Hot reloader aka edit and continue for Python"
 optional = false
 python-versions = ">=3.7.0,<4.0"
 files = [
-    {file = "reloadium-1.2.1-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:2de296430aa6e283845149b5eed305c40cd1927da6d7a0325552e4faacf8bd7b"},
-    {file = "reloadium-1.2.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:009c959d8f832dc3ce7eecf2e8129b062b379e2ca8e2c9644a1c46bf257a613d"},
-    {file = "reloadium-1.2.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d12d36c50b4a1e6aada190d454b5609126d4311239367b5cd6aafc679afba0a7"},
-    {file = "reloadium-1.2.1-cp310-cp310-win_amd64.whl", hash = "sha256:2b029219ed875b63a71e8db367876fd692830e471ba6b28b2d5911d8163d0315"},
-    {file = "reloadium-1.2.1-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:c8cec53a195082c5c8504f5ba6ddc2b9cfdb4a7b991446f415f7abfa06b61f8e"},
-    {file = "reloadium-1.2.1-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:c1498b65ae17f47593b9004c057c043cc89674f75d2db0821fa7e488271fb2dc"},
-    {file = "reloadium-1.2.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6b56c19dd9e56b7b029c284f6e320f57bfce4e4c7aa9d6d7b6e61fcb50d4c51e"},
-    {file = "reloadium-1.2.1-cp311-cp311-win_amd64.whl", hash = "sha256:c6b8feea450a2d02f7e48d5efe43b33516af85a93fd5a534e7d7b0be288c5163"},
-    {file = "reloadium-1.2.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b42ae2adb4dd693369fc455c54d38ae4d918c235de11a1ff2712e7838e76a348"},
-    {file = "reloadium-1.2.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c35c5636464065e057af21dd597c21cb567e6c7d547316ceb4e7f9bba6eb4c7c"},
-    {file = "reloadium-1.2.1-cp38-cp38-win_amd64.whl", hash = "sha256:0df2b2817fbda679556a57633a2cf749fac03256e5540848739a7e477f726fb2"},
-    {file = "reloadium-1.2.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:555ad6d846999a0c84a681ca1388df1119f1d23354e034f4e110e16c89681fb2"},
-    {file = "reloadium-1.2.1-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:4c4dba90db77a0164589947e8ea4a199824eb68fee8c2f2138789271405e4ae8"},
-    {file = "reloadium-1.2.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ce031ba420048ef2cdd093b71eba0ecc22d30c4378916fb2715daaedbad806e8"},
-    {file = "reloadium-1.2.1-cp39-cp39-win_amd64.whl", hash = "sha256:678eaae101e634a8f004ae0f6105b2f7772c148208abc56c4ae6b25997330a2a"},
-    {file = "reloadium-1.2.1-py3-none-any.whl", hash = "sha256:e9676295a1fdb3ab5fbe1e1527a15524932f6d4e03dceabc5727fee5dc059374"},
+    {file = "reloadium-1.3.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:553c1de2276d76ed9a87bacef931fec4fd3019ddf2284c264e7942bc1efb1312"},
+    {file = "reloadium-1.3.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:981e4fe54e406bd63b7146f1687ec655aa8cb6423849b3a98caa814ef715098b"},
+    {file = "reloadium-1.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7ad6558d74930bce3ebcf447e8b3b19c51373d212776183077e66d72dbd73673"},
+    {file = "reloadium-1.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:d6ee088e03fe10a93f49f177d69408f440b85c592ce027ed9a0eb4df99a5c29b"},
+    {file = "reloadium-1.3.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:bd749572fee33d83e2079241890a677d88edceba586ce4b84be05e943b712d22"},
+    {file = "reloadium-1.3.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:dcd49241a3c30be271252f7353badcc967fd5db256049300bb113c89c75f841a"},
+    {file = "reloadium-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:18e58b8e7990ba21968025d31bbd93658dec36cde5ffae14cd9bd5287c4b4fc9"},
+    {file = "reloadium-1.3.0-cp311-cp311-win_amd64.whl", hash = "sha256:2cd1ac48e64a6548428f95233f378f8d2ca66f22c7226c3586803595c3a14520"},
+    {file = "reloadium-1.3.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:4e8cddbc85ecdf2d2c5be9c88795046d9a2640eee9e2c6a1b645e51dda4f8da0"},
+    {file = "reloadium-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:02b40d7027248a5733ccfed63d14919ea3b864084dccd2b95f18f9f65075940e"},
+    {file = "reloadium-1.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:aaa3f3124a4a8184490915305429cf133b28c04730b6233cc9ad519eac2849c8"},
+    {file = "reloadium-1.3.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:77f033d28c73393c4494cefa760ed68f3ec25a539eb2125f65c843b97197cb69"},
+    {file = "reloadium-1.3.0-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:3a5bff768f11f45b5812563b3674be46713fb107e30cf16761cb52d4ad1cee08"},
+    {file = "reloadium-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:69109d5934c4d6360bcebfe374429953ed7a0d3e542c90708644a0e554b6940c"},
+    {file = "reloadium-1.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:7b7562ad934760dd26223b29eccd65e29ddd93c132449dc4b4bc4f274241b5e9"},
+    {file = "reloadium-1.3.0-py3-none-any.whl", hash = "sha256:bebd2ae6fe6f671537c6d5c88efe523c10cec3460c0023210b0fac9990a23db3"},
 ]
 
 [[package]]
@@ -448,6 +552,21 @@ doc = ["jupytext", "matplotlib (>2)", "myst-nb", "numpydoc", "pooch", "pydata-sp
 test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "scikit-umfpack", "threadpoolctl"]
 
 [[package]]
+name = "screeninfo"
+version = "0.8.1"
+description = "Fetch location and size of physical screens."
+optional = false
+python-versions = ">=3.6.2,<4.0.0"
+files = [
+    {file = "screeninfo-0.8.1-py3-none-any.whl", hash = "sha256:e97d6b173856edcfa3bd282f81deb528188aff14b11ec3e195584e7641be733c"},
+    {file = "screeninfo-0.8.1.tar.gz", hash = "sha256:9983076bcc7e34402a1a9e4d7dabf3729411fd2abb3f3b4be7eba73519cd2ed1"},
+]
+
+[package.dependencies]
+Cython = {version = "*", markers = "sys_platform == \"darwin\""}
+pyobjc-framework-Cocoa = {version = "*", markers = "sys_platform == \"darwin\""}
+
+[[package]]
 name = "taskipy"
 version = "1.12.0"
 description = "tasks runner for python projects"
@@ -478,4 +597,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11,<3.13"
-content-hash = "a347df1fd581eba78d8ef023ab3b3f73c0328d04fa1f906d0945694893d2e216"
+content-hash = "c29e85b8bf7a051ba7fcf17bc474abb1459bfa2c4579798c2a8aa7823cc8c2be"
