@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
+from functools import partial
 
 import numpy as np
 import pygame
 from numpy.typing import NDArray
-from scipy import interpolate
 
 from curvas_omog.settings import (
     GREEN,
@@ -43,7 +43,65 @@ class Curve:
 
 
 #     return d[p]
-def de_boor(
+
+
+def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.int64):
+    if degree == 0:
+        if knots[pi] <= u < knots[pi + 1]:
+            return np.float64(1)
+        return np.float64(0)
+
+    alpha = np.float64(0)
+    if not knots[pi + degree] == 0:
+        alpha = np.float64(
+            ((u - knots[pi]) / (knots[pi + degree]))
+            * de_boor(
+                knots,
+                u,
+                degree - 1,
+                pi,
+            )
+        )
+    beta = np.float64(0)
+    if not knots[pi + degree + 1] - knots[pi + 1] == 0:
+        beta = np.float64(
+            ((knots[pi + degree + 1] - u) / (knots[pi + degree + 1] - knots[pi + 1]))
+            * de_boor(knots, u, degree - 1, pi + 1)
+        )
+
+    return alpha + beta
+
+
+def helper(control_points, knots, degree, u):
+    weights = control_points[:, -1]
+    points = control_points[:, :-1]
+    point = np.array((0.0, 0.0))
+    weight = 0
+    for pi in range(len(points)):
+        d = de_boor(knots, u, degree, np.int64(pi))
+        point += weights[pi] * points[pi] * d
+        weight += weights[pi] * d
+    return point / weight
+
+
+def evaluate_nurbs_curve(
+    control_points: PointType, knots: NDArray[np.float64], num_points=100, degree=K
+):
+    degree = np.int64(degree)
+    u_values = np.linspace(knots[degree], knots[-degree] - 1e-10, num_points)
+
+    curve_points = np.array(
+        list(
+            map(
+                partial(helper, control_points, knots, degree),
+                u_values,
+            )
+        )
+    )
+    return curve_points
+
+
+def de_boor1(
     t: float,
     i: int,
     k: int,
@@ -53,10 +111,10 @@ def de_boor(
     if k == 0:
         return control_points[i, :-1]
     alpha = (t - knot_vector[i]) / (knot_vector[i + k] - knot_vector[i])
-    p1 = de_boor(t, i, k - 1, control_points, knot_vector)
+    p1 = de_boor1(t, i, k - 1, control_points, knot_vector)
     if alpha == np.Infinity:
         return p1 / control_points[i, -1]
-    p2 = de_boor(t, i + 1, k - 1, control_points, knot_vector)
+    p2 = de_boor1(t, i + 1, k - 1, control_points, knot_vector)
 
     # Interpolate with weights
     weighted_interpolated_point = (1 - alpha) * (p1 / control_points[i, -1]) + alpha * (
@@ -268,17 +326,16 @@ def draw(state: EnvironmentState):
     if n > K:
         knot_vector = np.array(
             [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int"
+        ) / (n - K)
+        curve_points = evaluate_nurbs_curve(
+            state.active_curve.points, knot_vector, 10 * n
         )
-        u = np.linspace(0, (n - K), 10000)
-        curve_points = np.array(
-            interpolate.splev(u, (knot_vector, state.active_curve.points.T, K))
-        ).T
 
         for point1, point2 in (
             (p1, curve_points[p1_index + 1])
             for p1_index, p1 in enumerate(curve_points[:-1])
         ):
-            pygame.draw.line(state.screen, WHITE, point1[:-1], point2[:-1], 1)
+            pygame.draw.line(state.screen, WHITE, point1, point2, 1)
         # qtd_points_text = state.font.render(
         #     f"Qtd Points Knot: {len(knot_vector)}",
         #     True,
@@ -299,7 +356,9 @@ class Environment:
         if not pygame.font.get_init():
             pygame.font.init()
 
-        font = pygame.font.SysFont(["comic sans"], 16)
+        # print(sorted(pygame.font.get_fonts()))
+
+        font = pygame.font.SysFont(["sans", pygame.font.get_default_font()], 16)
         screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED)
         clock = pygame.time.Clock()
         is_running = True
