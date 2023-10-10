@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from functools import partial
+from functools import cache, partial, wraps
 
 import numpy as np
 import pygame
@@ -45,6 +45,31 @@ class Curve:
 #     return d[p]
 
 
+def np_cache(function):
+    @cache
+    def cached_wrapper(*args, **kwargs):
+        args = [np.array(a) if isinstance(a, tuple) else a for a in args]
+        kwargs = {
+            k: np.array(v) if isinstance(v, tuple) else v for k, v in kwargs.items()
+        }
+
+        return function(*args, **kwargs)
+
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        args = [tuple(a) if isinstance(a, np.ndarray) else a for a in args]
+        kwargs = {
+            k: tuple(v) if isinstance(v, np.ndarray) else v for k, v in kwargs.items()
+        }
+        return cached_wrapper(*args, **kwargs)
+
+    wrapper.cache_info = cached_wrapper.cache_info # type: ignore
+    wrapper.cache_clear = cached_wrapper.cache_clear # type: ignore
+
+    return wrapper
+
+
+@np_cache
 def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.int64):
     if degree == 0:
         if knots[pi] <= u < knots[pi + 1]:
@@ -325,10 +350,10 @@ def draw(state: EnvironmentState):
     n = len(state.active_curve.points)
     if n > K:
         knot_vector = np.array(
-            [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int"
+            [0] * K + list(range(n - K+1)) + [n - K] * K, dtype="int"
         ) / (n - K)
         curve_points = evaluate_nurbs_curve(
-            state.active_curve.points, knot_vector, 10 * n
+            state.active_curve.points, knot_vector, 50 * n
         )
 
         for point1, point2 in (
