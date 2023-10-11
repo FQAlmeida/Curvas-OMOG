@@ -6,9 +6,11 @@ import pygame
 from numpy.typing import NDArray
 
 from curvas_omog.settings import (
+    BLUE,
     GREEN,
     GREY,
     POINT_RADIUS,
+    RED,
     SCREEN_SIZE,
     WHITE,
     K,
@@ -234,12 +236,25 @@ def handle_event(
     if event.type == pygame.QUIT:
         state.is_running = False
     pos = pygame.mouse.get_pos()
-    if event.type == pygame.MOUSEBUTTONUP:
+    if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
         handle_mouse_btn_up(state, pos)
-    if event.type == pygame.MOUSEBUTTONDOWN:
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
         handle_mouse_btn_down(state, pos)
+    if event.type == pygame.MOUSEWHEEL:
+        handle_mouse_wheel(event, state, pos)
     if event.type == pygame.KEYUP:
         handle_keybd_up(event, state)
+
+
+def handle_mouse_wheel(
+    event: pygame.event.Event, state: EnvironmentState, pos: tuple[int, int]
+):
+    if (
+        pos_index := is_click_colliding(
+            pos, state.curves[state.active_curve_index].points, state.dragging_id
+        )
+    ) is not None:
+        state.active_curve.points[pos_index][-1] += 0.1 * event.y
 
 
 def handle_keybd_up(event: pygame.event.Event, state: EnvironmentState):
@@ -345,7 +360,12 @@ def draw(state: EnvironmentState):
 
     if state.should_draw_support_points:
         for point in state.active_curve.points:
-            pygame.draw.circle(state.screen, GREEN, point[:-1], POINT_RADIUS)
+            pygame.draw.circle(
+                state.screen,
+                BLUE if point[-1] == 0 else GREEN if point[-1] >= 0 else RED,
+                point[:-1],
+                POINT_RADIUS,
+            )
 
     if state.should_draw_support_lines:
         for point1, point2 in (
