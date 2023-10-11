@@ -77,9 +77,9 @@ def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.
         return np.float64(0)
 
     alpha = np.float64(0)
-    if not knots[pi + degree] == 0:
+    if not knots[pi + degree] - knots[pi] == 0:
         alpha = np.float64(
-            ((u - knots[pi]) / (knots[pi + degree]))
+            ((u - knots[pi]) / (knots[pi + degree] - knots[pi ]))
             * de_boor(
                 knots,
                 u,
