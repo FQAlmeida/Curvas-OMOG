@@ -63,8 +63,8 @@ def np_cache(function):
         }
         return cached_wrapper(*args, **kwargs)
 
-    wrapper.cache_info = cached_wrapper.cache_info # type: ignore
-    wrapper.cache_clear = cached_wrapper.cache_clear # type: ignore
+    wrapper.cache_info = cached_wrapper.cache_info  # type: ignore
+    wrapper.cache_clear = cached_wrapper.cache_clear  # type: ignore
 
     return wrapper
 
@@ -79,7 +79,7 @@ def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.
     alpha = np.float64(0)
     if not knots[pi + degree] - knots[pi] == 0:
         alpha = np.float64(
-            ((u - knots[pi]) / (knots[pi + degree] - knots[pi ]))
+            ((u - knots[pi]) / (knots[pi + degree] - knots[pi]))
             * de_boor(
                 knots,
                 u,
@@ -97,7 +97,12 @@ def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.
     return alpha + beta
 
 
-def helper(control_points, knots, degree, u):
+def helper(
+    control_points: PointType,
+    knots: NDArray[np.float64],
+    degree: np.int64,
+    u: np.float64,
+):
     weights = control_points[:, -1]
     points = control_points[:, :-1]
     point = np.array((0.0, 0.0))
@@ -106,6 +111,8 @@ def helper(control_points, knots, degree, u):
         d = de_boor(knots, u, degree, np.int64(pi))
         point += weights[pi] * points[pi] * d
         weight += weights[pi] * d
+    if weight in set((np.inf, 0)):
+        return control_points[-1, :-1]
     return point / weight
 
 
@@ -113,7 +120,7 @@ def evaluate_nurbs_curve(
     control_points: PointType, knots: NDArray[np.float64], num_points=100, degree=K
 ):
     degree = np.int64(degree)
-    u_values = np.linspace(knots[degree], knots[-degree] - 1e-10, num_points)
+    u_values = np.linspace(knots[degree], knots[-degree], num_points)
 
     curve_points = np.array(
         list(
@@ -249,7 +256,7 @@ def handle_keybd_up(event: pygame.event.Event, state: EnvironmentState):
             state.curves = [Curve()]
             state.active_curve_index = 0
             rng = np.random.default_rng(1337)
-            state.active_curve.points = rng.random((10000, 3)) * (*SCREEN_SIZE, 1)
+            state.active_curve.points = rng.random((10, 3)) * (*SCREEN_SIZE, 1)
         case pygame.K_KP2:
             state.curves = [Curve()]
             state.active_curve_index = 0
@@ -350,7 +357,7 @@ def draw(state: EnvironmentState):
     n = len(state.active_curve.points)
     if n > K:
         knot_vector = np.array(
-            [0] * K + list(range(n - K+1)) + [n - K] * K, dtype="int"
+            [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int"
         ) / (n - K)
         curve_points = evaluate_nurbs_curve(
             state.active_curve.points, knot_vector, 50 * n
