@@ -292,7 +292,7 @@ class Environment:
             draw(self.state)
             self.state.clock.tick(60)
 
-    def quit(self):
+    def quit_env(self):
         if pygame.get_init():
             pygame.font.quit()
         if pygame.font.get_init():

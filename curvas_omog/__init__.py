@@ -4,4 +4,4 @@ if __name__ == "__main__":
     environment = Environment()
 
     environment.main_loop()
-    environment.quit()
+    environment.quit_env()
