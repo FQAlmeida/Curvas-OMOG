@@ -47,7 +47,11 @@ class Curve(ABC):
 class Nurb(Curve):
     @np_cache
     def de_boor(
-        self, knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.int64,
+        self,
+        knots: NDArray[np.float64],
+        u: np.float64,
+        degree: np.int64,
+        pi: np.int64,
     ):
         if degree == 0:
             if knots[pi] <= u < knots[pi + 1]:
@@ -100,9 +104,12 @@ class Nurb(Curve):
         num_points=100,
     ):
         n = len(self.points)
-        degree = max(min(n-1, int(self.degree)), 0)
+        if n == 0:
+            return np.empty((0, 2))
+        degree = max(min(n - 1, int(self.degree)), 1)
         knots = np.array(
-            [0] * degree + list(range(n - degree + 1)) + [n - degree] * degree, dtype="int",
+            [0] * degree + list(range(n - degree + 1)) + [n - degree] * degree,
+            dtype="int",
         ) / (n - degree)
         degree = np.int64(degree)
         u_values = np.linspace(knots[degree], knots[-degree], num_points)
