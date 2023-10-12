@@ -12,7 +12,6 @@ from curvas_omog.settings import (
     RED,
     SCREEN_SIZE,
     WHITE,
-    K,
     PointType,
 )
 
