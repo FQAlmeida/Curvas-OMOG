@@ -100,12 +100,11 @@ class Nurb(Curve):
         num_points=100,
     ):
         n = len(self.points)
-        if n <= K:
-            return self.points
+        degree = max(min(n-1, int(self.degree)), 0)
         knots = np.array(
-            [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int",
-        ) / (n - K)
-        degree = np.int64(self.degree)
+            [0] * degree + list(range(n - degree + 1)) + [n - degree] * degree, dtype="int",
+        ) / (n - degree)
+        degree = np.int64(degree)
         u_values = np.linspace(knots[degree], knots[-degree], num_points)
 
         return np.array(
@@ -140,8 +139,6 @@ class Bezier(Curve):
 
     def evaluate_curve(self, num_points=100):
         n = len(self.points)
-        if n <= K:
-            return self.points
         u_values = np.linspace(0, 1, num_points)
 
         return np.array(

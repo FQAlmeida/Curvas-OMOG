@@ -82,11 +82,15 @@ def handle_event(
 
 
 def handle_mouse_wheel(
-    event: pygame.event.Event, state: EnvironmentState, pos: tuple[int, int],
+    event: pygame.event.Event,
+    state: EnvironmentState,
+    pos: tuple[int, int],
 ):
     if (
         pos_index := is_click_colliding(
-            pos, state.active_curve.points, state.dragging_id,
+            pos,
+            state.active_curve.points,
+            state.dragging_id,
         )
     ) is not None:
         state.active_curve.points[pos_index][-1] += 0.1 * event.y
@@ -132,7 +136,9 @@ def handle_mouse_btn_up(state: EnvironmentState, pos: tuple[int, int]):
     pos_point = np.array((*pos, 1))
     if (
         pos_index := is_click_colliding(
-            pos, state.active_curve.points, state.dragging_id,
+            pos,
+            state.active_curve.points,
+            state.dragging_id,
         )
     ) is None:
         if not np.isin(state.active_curve.points[:, :-1], pos_point).any():
@@ -173,45 +179,45 @@ def handle_c_0(state: EnvironmentState):
 
 def draw_texts(state: EnvironmentState):
     should_delete_on_collide_text = state.font.render(
-        text=f"Should Delete: {state.should_delete_on_collide}",
-        antialias=True,
-        color="green" if state.should_delete_on_collide else "red",
+        f"Should Delete: {state.should_delete_on_collide}",
+        True,  # noqa: FBT003
+        "green" if state.should_delete_on_collide else "red",
     )
     state.screen.blit(should_delete_on_collide_text, (20, 20))
     active_curve_text = state.font.render(
-        text=f"Active Curve: {state.active_curve_index+1}",
-        antialias=True,
-        color="green",
+        f"Active Curve: {state.active_curve_index+1}",
+        True,  # noqa: FBT003
+        "green",
     )
     state.screen.blit(active_curve_text, (20, 40))
     qtd_points_text = state.font.render(
-        text=f"Qtd Points: {len(state.active_curve.points)}",
-        antialias=True,
-        color="green",
+        f"Qtd Points: {len(state.active_curve.points)}",
+        True,  # noqa: FBT003
+        "green",
     )
     state.screen.blit(qtd_points_text, (20, 60))
     should_snap_text = state.font.render(
-        text=f"Should Snap in Place: {state.should_snap}",
-        antialias=True,
-        color="green" if state.should_snap else "red",
+        f"Should Snap in Place: {state.should_snap}",
+        True,  # noqa: FBT003
+        "green" if state.should_snap else "red",
     )
     state.screen.blit(should_snap_text, (20, 80))
     should_draw_support_text = state.font.render(
-        text=f"Should Draw Support Lines: {state.should_draw_support_lines}",
-        antialias=True,
-        color="green" if state.should_draw_support_lines else "red",
+        f"Should Draw Support Lines: {state.should_draw_support_lines}",
+        True,  # noqa: FBT003
+        "green" if state.should_draw_support_lines else "red",
     )
     state.screen.blit(should_draw_support_text, (20, 100))
     should_draw_support_points_text = state.font.render(
-        text=f"Should Draw Support Points: {state.should_draw_support_points}",
-        antialias=True,
-        color="green" if state.should_draw_support_points else "red",
+        f"Should Draw Support Points: {state.should_draw_support_points}",
+        True,  # noqa: FBT003
+        "green" if state.should_draw_support_points else "red",
     )
     state.screen.blit(should_draw_support_points_text, (20, 120))
     qtd_curves_text = state.font.render(
-        text=f"Qtd Curves: {len(state.curves)}",
-        antialias=True,
-        color="green",
+        f"Qtd Curves: {len(state.curves)}",
+        True,  # noqa: FBT003
+        "green",
     )
     state.screen.blit(qtd_curves_text, (20, 140))
 
@@ -237,13 +243,12 @@ def draw(state: EnvironmentState):
 
     for curve in state.curves:
         n = len(curve.points)
-        if n > K:
-            curve_points = curve.evaluate_curve(50 * n)
-            for point1, point2 in (
-                (p1, curve_points[p1_index + 1])
-                for p1_index, p1 in enumerate(curve_points[:-1])
-            ):
-                pygame.draw.line(state.screen, WHITE, point1, point2, 1)
+        curve_points = curve.evaluate_curve(50 * n)
+        for point1, point2 in (
+            (p1, curve_points[p1_index + 1])
+            for p1_index, p1 in enumerate(curve_points[:-1])
+        ):
+            pygame.draw.line(state.screen, WHITE, point1, point2, 1)
     draw_texts(state)
     pygame.display.flip()
 
