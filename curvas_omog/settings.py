@@ -8,7 +8,7 @@ from screeninfo import get_monitors
 primary_monitor = next(iter(filter(lambda mon: mon.is_primary, get_monitors())))
 
 SCREEN_SIZE = tuple(
-    map(lambda res: res * 0.85, (primary_monitor.width, primary_monitor.height))
+    res * 0.85 for res in (primary_monitor.width, primary_monitor.height)
 )
 POINT_RADIUS = 5
 UI_INITIAL, UI_SIZE = (0, 0), (300, SCREEN_SIZE[1])

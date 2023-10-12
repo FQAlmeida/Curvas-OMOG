@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
-from functools import cache, partial, wraps
 
 import numpy as np
 import pygame
-from numpy.typing import NDArray
 
+from curvas_omog.curve import Bezier, Curve, Nurb
 from curvas_omog.settings import (
     BLUE,
     GREEN,
@@ -16,170 +15,6 @@ from curvas_omog.settings import (
     K,
     PointType,
 )
-
-
-class Curve:
-    points: PointType
-
-    def __init__(self) -> None:
-        self.points = np.empty((0, 3))
-
-
-# def de_boor(k: int, x: int, t, c, p: int):
-#     """Evaluates S(x).
-
-#     Arguments
-#     ---------
-#     k: Index of knot interval that contains x.
-#     x: Position.
-#     t: Array of knot positions, needs to be padded as described above.
-#     c: Array of control points.
-#     p: Degree of B-spline.
-#     """
-#     d = [c[j + k - p] for j in range(0, p + 1)]
-
-#     for r in range(1, p + 1):
-#         for j in range(p, r - 1, -1):
-#             alpha = (x - t[j + k - p]) / (t[j + 1 + k - r] - t[j + k - p])
-#             d[j] = (1.0 - alpha) * d[j - 1] + alpha * d[j]
-
-
-#     return d[p]
-
-
-def np_cache(function):
-    @cache
-    def cached_wrapper(*args, **kwargs):
-        args = [np.array(a) if isinstance(a, tuple) else a for a in args]
-        kwargs = {
-            k: np.array(v) if isinstance(v, tuple) else v for k, v in kwargs.items()
-        }
-
-        return function(*args, **kwargs)
-
-    @wraps(function)
-    def wrapper(*args, **kwargs):
-        args = [tuple(a) if isinstance(a, np.ndarray) else a for a in args]
-        kwargs = {
-            k: tuple(v) if isinstance(v, np.ndarray) else v for k, v in kwargs.items()
-        }
-        return cached_wrapper(*args, **kwargs)
-
-    wrapper.cache_info = cached_wrapper.cache_info  # type: ignore
-    wrapper.cache_clear = cached_wrapper.cache_clear  # type: ignore
-
-    return wrapper
-
-
-@np_cache
-def de_boor(knots: NDArray[np.float64], u: np.float64, degree: np.int64, pi: np.int64):
-    if degree == 0:
-        if knots[pi] <= u < knots[pi + 1]:
-            return np.float64(1)
-        return np.float64(0)
-
-    alpha = np.float64(0)
-    if not knots[pi + degree] - knots[pi] == 0:
-        alpha = np.float64(
-            ((u - knots[pi]) / (knots[pi + degree] - knots[pi]))
-            * de_boor(
-                knots,
-                u,
-                degree - 1,
-                pi,
-            )
-        )
-    beta = np.float64(0)
-    if not knots[pi + degree + 1] - knots[pi + 1] == 0:
-        beta = np.float64(
-            ((knots[pi + degree + 1] - u) / (knots[pi + degree + 1] - knots[pi + 1]))
-            * de_boor(knots, u, degree - 1, pi + 1)
-        )
-
-    return alpha + beta
-
-
-def helper(
-    control_points: PointType,
-    knots: NDArray[np.float64],
-    degree: np.int64,
-    u: np.float64,
-):
-    weights = control_points[:, -1]
-    points = control_points[:, :-1]
-    point = np.array((0.0, 0.0))
-    weight = 0
-    for pi in range(len(points)):
-        d = de_boor(knots, u, degree, np.int64(pi))
-        point += weights[pi] * points[pi] * d
-        weight += weights[pi] * d
-    if weight in set((np.inf, 0)):
-        return control_points[-1, :-1]
-    return point / weight
-
-
-def evaluate_nurbs_curve(
-    control_points: PointType, knots: NDArray[np.float64], num_points=100, degree=K
-):
-    degree = np.int64(degree)
-    u_values = np.linspace(knots[degree], knots[-degree], num_points)
-
-    curve_points = np.array(
-        list(
-            map(
-                partial(helper, control_points, knots, degree),
-                u_values,
-            )
-        )
-    )
-    return curve_points
-
-
-def de_boor1(
-    t: float,
-    i: int,
-    k: int,
-    control_points: PointType,
-    knot_vector: NDArray[np.float64],
-):
-    if k == 0:
-        return control_points[i, :-1]
-    alpha = (t - knot_vector[i]) / (knot_vector[i + k] - knot_vector[i])
-    p1 = de_boor1(t, i, k - 1, control_points, knot_vector)
-    if alpha == np.Infinity:
-        return p1 / control_points[i, -1]
-    p2 = de_boor1(t, i + 1, k - 1, control_points, knot_vector)
-
-    # Interpolate with weights
-    weighted_interpolated_point = (1 - alpha) * (p1 / control_points[i, -1]) + alpha * (
-        p2 / control_points[i + 1, -1]
-    )
-    return weighted_interpolated_point
-
-
-def boor(t, degree, i, knots):
-    if degree == 0:
-        return 1.0 if knots[i] <= t < knots[i + 1] else 0.0
-
-    if knots[i + degree] == knots[i]:
-        c1 = 0.0
-    else:
-        c1 = (
-            (t - knots[i])
-            / (knots[i + degree] - knots[i])
-            * boor(t, degree - 1, i, knots)
-        )
-
-    if knots[i + degree + 1] == knots[i + 1]:
-        c2 = 0.0
-    else:
-        c2 = (
-            (knots[i + degree + 1] - t)
-            / (knots[i + degree + 1] - knots[i + 1])
-            * boor(t, degree - 1, i + 1, knots)
-        )
-
-    return c1 + c2
 
 
 @dataclass
@@ -218,10 +53,10 @@ def is_click_colliding(
     np_pos = np.array(
         [
             pos,
-        ]
+        ],
     )
     distances = np.array(
-        np.sqrt(np.sum(np.square(np.subtract(np_pos, points[:, :-1])), axis=1))
+        np.sqrt(np.sum(np.square(np.subtract(np_pos, points[:, :-1])), axis=1)),
     )
     if len(indexes := np.argwhere(distances < 2 * POINT_RADIUS)) > 0:
         rindex = indexes[0, 0]
@@ -247,11 +82,11 @@ def handle_event(
 
 
 def handle_mouse_wheel(
-    event: pygame.event.Event, state: EnvironmentState, pos: tuple[int, int]
+    event: pygame.event.Event, state: EnvironmentState, pos: tuple[int, int],
 ):
     if (
         pos_index := is_click_colliding(
-            pos, state.curves[state.active_curve_index].points, state.dragging_id
+            pos, state.active_curve.points, state.dragging_id,
         )
     ) is not None:
         state.active_curve.points[pos_index][-1] += 0.1 * event.y
@@ -268,12 +103,28 @@ def handle_keybd_up(event: pygame.event.Event, state: EnvironmentState):
         case pygame.K_KP5:
             state.should_draw_support_points = not state.should_draw_support_points
         case pygame.K_KP6:
-            state.curves = [Curve()]
+            state.curves = [Nurb()]
             state.active_curve_index = 0
             rng = np.random.default_rng(1337)
             state.active_curve.points = rng.random((10, 3)) * (*SCREEN_SIZE, 1)
+        case pygame.K_KP7:
+            state.active_curve_index -= 1
+            if state.active_curve_index < 0:
+                state.active_curve_index = 0
+        case pygame.K_KP8:
+            state.active_curve_index += 1
+            if state.active_curve_index >= len(state.curves):
+                state.active_curve_index = len(state.curves) - 1
+        case pygame.K_KP9:
+            state.add_curve(Nurb())
+            state.active_curve_index = len(state.curves) - 1
+        case pygame.K_KP_PLUS:
+            state.add_curve(Bezier())
+            state.active_curve_index = len(state.curves) - 1
+        case pygame.K_KP_DIVIDE:
+            handle_c_0(state)
         case pygame.K_KP2:
-            state.curves = [Curve()]
+            state.curves = [Nurb()]
             state.active_curve_index = 0
 
 
@@ -281,23 +132,18 @@ def handle_mouse_btn_up(state: EnvironmentState, pos: tuple[int, int]):
     pos_point = np.array((*pos, 1))
     if (
         pos_index := is_click_colliding(
-            pos, state.curves[state.active_curve_index].points, state.dragging_id
+            pos, state.active_curve.points, state.dragging_id,
         )
     ) is None:
-        if not np.isin(
-            state.curves[state.active_curve_index].points[:, :-1], pos_point
-        ).any():
-            state.curves[state.active_curve_index].points = np.concatenate(
-                (state.curves[state.active_curve_index].points, [pos_point]),
+        if not np.isin(state.active_curve.points[:, :-1], pos_point).any():
+            state.active_curve.points = np.concatenate(
+                (state.active_curve.points, [pos_point]),
                 axis=0,
             )
     elif state.dragging_id is not None and state.dragging_id != pos_index:
         if state.should_delete_on_collide:
-            state.curves[state.active_curve_index].points = state.curves[
-                state.active_curve_index
-            ].points[
-                np.arange(len(state.curves[state.active_curve_index].points))
-                != state.dragging_id
+            state.active_curve.points = state.curves[state.active_curve_index].points[
+                np.arange(len(state.active_curve.points)) != state.dragging_id
             ]
         elif state.should_snap:
             state.active_curve.points[state.dragging_id] = state.active_curve.points[
@@ -308,51 +154,66 @@ def handle_mouse_btn_up(state: EnvironmentState, pos: tuple[int, int]):
 
 
 def handle_mouse_btn_down(state: EnvironmentState, pos: tuple[int, int]):
-    if (
-        pos_index := is_click_colliding(
-            pos, state.curves[state.active_curve_index].points
-        )
-    ) is not None:
+    if (pos_index := is_click_colliding(pos, state.active_curve.points)) is not None:
         state.dragging_id = pos_index
+
+
+def handle_c_0(state: EnvironmentState):
+    for curva_1, curva_2, curva_2_index in (
+        (curva_1, state.curves[curva_1_index + 1], curva_1_index + 1)
+        for curva_1_index, curva_1 in enumerate(state.curves[:-1])
+    ):
+        end_point = curva_1.points[-1]
+        start_point = curva_2.points[0]
+        translation = np.append(start_point[:-1] - end_point[:-1], 0)
+        state.curves[curva_2_index].points = (
+            state.curves[curva_2_index].points - translation
+        )
 
 
 def draw_texts(state: EnvironmentState):
     should_delete_on_collide_text = state.font.render(
-        f"Should Delete: {state.should_delete_on_collide}",
-        True,
-        "green" if state.should_delete_on_collide else "red",
+        text=f"Should Delete: {state.should_delete_on_collide}",
+        antialias=True,
+        color="green" if state.should_delete_on_collide else "red",
     )
     state.screen.blit(should_delete_on_collide_text, (20, 20))
     active_curve_text = state.font.render(
-        f"Active Curve: {state.active_curve_index+1}",
-        True,
-        "green",
+        text=f"Active Curve: {state.active_curve_index+1}",
+        antialias=True,
+        color="green",
     )
     state.screen.blit(active_curve_text, (20, 40))
     qtd_points_text = state.font.render(
-        f"Qtd Points: {len(state.active_curve.points)}",
-        True,
-        "green",
+        text=f"Qtd Points: {len(state.active_curve.points)}",
+        antialias=True,
+        color="green",
     )
     state.screen.blit(qtd_points_text, (20, 60))
     should_snap_text = state.font.render(
-        f"Should Snap in Place: {state.should_snap}",
-        True,
-        "green" if state.should_snap else "red",
+        text=f"Should Snap in Place: {state.should_snap}",
+        antialias=True,
+        color="green" if state.should_snap else "red",
     )
     state.screen.blit(should_snap_text, (20, 80))
     should_draw_support_text = state.font.render(
-        f"Should Draw Support Lines: {state.should_draw_support_lines}",
-        True,
-        "green" if state.should_draw_support_lines else "red",
+        text=f"Should Draw Support Lines: {state.should_draw_support_lines}",
+        antialias=True,
+        color="green" if state.should_draw_support_lines else "red",
     )
     state.screen.blit(should_draw_support_text, (20, 100))
     should_draw_support_points_text = state.font.render(
-        f"Should Draw Support Points: {state.should_draw_support_points}",
-        True,
-        "green" if state.should_draw_support_points else "red",
+        text=f"Should Draw Support Points: {state.should_draw_support_points}",
+        antialias=True,
+        color="green" if state.should_draw_support_points else "red",
     )
     state.screen.blit(should_draw_support_points_text, (20, 120))
+    qtd_curves_text = state.font.render(
+        text=f"Qtd Curves: {len(state.curves)}",
+        antialias=True,
+        color="green",
+    )
+    state.screen.blit(qtd_curves_text, (20, 140))
 
 
 def draw(state: EnvironmentState):
@@ -374,26 +235,15 @@ def draw(state: EnvironmentState):
         ):
             pygame.draw.line(state.screen, GREY, point1[:-1], point2[:-1], 1)
 
-    n = len(state.active_curve.points)
-    if n > K:
-        knot_vector = np.array(
-            [0] * K + list(range(n - K + 1)) + [n - K] * K, dtype="int"
-        ) / (n - K)
-        curve_points = evaluate_nurbs_curve(
-            state.active_curve.points, knot_vector, 50 * n
-        )
-
-        for point1, point2 in (
-            (p1, curve_points[p1_index + 1])
-            for p1_index, p1 in enumerate(curve_points[:-1])
-        ):
-            pygame.draw.line(state.screen, WHITE, point1, point2, 1)
-        # qtd_points_text = state.font.render(
-        #     f"Qtd Points Knot: {len(knot_vector)}",
-        #     True,
-        #     "green",
-        # )
-        # state.screen.blit(qtd_points_text, (100, 20))
+    for curve in state.curves:
+        n = len(curve.points)
+        if n > K:
+            curve_points = curve.evaluate_curve(50 * n)
+            for point1, point2 in (
+                (p1, curve_points[p1_index + 1])
+                for p1_index, p1 in enumerate(curve_points[:-1])
+            ):
+                pygame.draw.line(state.screen, WHITE, point1, point2, 1)
     draw_texts(state)
     pygame.display.flip()
 
@@ -408,14 +258,12 @@ class Environment:
         if not pygame.font.get_init():
             pygame.font.init()
 
-        # print(sorted(pygame.font.get_fonts()))
-
         font = pygame.font.SysFont(["sans", pygame.font.get_default_font()], 16)
         screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED)
         clock = pygame.time.Clock()
         is_running = True
 
-        curves: list[Curve] = [Curve()]
+        curves: list[Curve] = [Nurb()]
 
         dragging_id: int | None = None
 
@@ -438,9 +286,9 @@ class Environment:
 
             if self.state.dragging_id is not None:
                 pos = pygame.mouse.get_pos()
-                self.state.curves[self.state.active_curve_index].points[
-                    self.state.dragging_id
-                ] = np.array((*pos, 1))
+                self.state.active_curve.points[self.state.dragging_id] = np.array(
+                    (*pos, self.state.active_curve.points[self.state.dragging_id, -1]),
+                )
             draw(self.state)
             self.state.clock.tick(60)
 

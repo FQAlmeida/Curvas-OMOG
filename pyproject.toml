@@ -42,6 +42,7 @@ show-source = true
 include = ["**/*.py", "**/*.pyi", "**/pyproject.toml", "*.ipynb"]
 select = [
   "E",    # pycodestyle
+  "W",    # pycodestylewarning
   "F",    # pyflakes
   "UP",   # pyupgrade
   "N",    # pep8-naming
@@ -49,8 +50,52 @@ select = [
   "I",    # isort
   "PERF", # perflint
   "NPY",  # numpy
+  "FURB", # refurb
+  "LOG",  # log
+  "FLY",  # flynt
+  "TRY",  # tryceratops 
+  "PGH",  # pygrep-hooks
+  "PD",   # pandas-vet
+  "ERA",  # eradicate 
   "PL",   # pylint
   "RUF",  # ruff
+  # "ALL",  # all >:)
+  "YTT",  # ruff
+  "ASYNC",  # ruff
+  "S",  # ruff
+  "BLE",  # ruff
+  "FBT",  # ruff
+  "B",  # ruff
+  "A",  # ruff
+  "COM",  # ruff
+  "CPY",  # ruff
+  "C4",  # ruff
+  "DTZ",  # ruff
+  "T10",  # ruff
+  "DJ",  # ruff
+  "EM",  # ruff
+  "EXE",  # ruff
+  "FA",  # ruff
+  "ISC",  # ruff
+  "ICN",  # ruff
+  "G",  # ruff
+  "INP",  # ruff
+  "PIE",  # ruff
+  "T20",  # ruff
+  "PYI",  # ruff
+  "PT",  # ruff
+  "Q",  # ruff
+  "RSE",  # ruff
+  "RET",  # ruff
+  "SLF",  # ruff
+  "SLOT",  # ruff
+  "SIM",  # ruff
+  "TID",  # ruff
+  "TCH",  # ruff
+  "INT",  # ruff
+  "ARG",  # ruff
+  "TD",  # ruff
+  "FIX",  # ruff
 ]
 
 [tool.taskipy.tasks]
