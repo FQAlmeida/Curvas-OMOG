@@ -166,7 +166,9 @@ def handle_mouse_btn_down(state: EnvironmentState, pos: tuple[int, int]):
 def handle_c_0(state: EnvironmentState):
     for curva_1, curva_2, curva_2_index in (
         (curva_1, state.curves[curva_1_index + 1], curva_1_index + 1)
-        for curva_1_index, curva_1 in enumerate(state.curves[:-1])
+        for curva_1_index, curva_1 in enumerate(state.curves)
+        for curva_index, curva in enumerate(state.curves)
+
     ):
         end_point = curva_1.points[-1]
         start_point = curva_2.points[0]
