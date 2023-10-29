@@ -237,13 +237,29 @@ def handle_g_2(state: EnvironmentState):
         b_1 = end_point_before_before - end_point_before
         b_1 /= np.linalg.norm(b_1)
 
-        angle = np.arccos(np.dot(a_1, b_1))
+        angle = np.arccos(np.dot(b_1, a_1))
+        if all(
+            (
+                a_1[1] >= 0,
+                b_1[0] <= 0,
+            ),
+        ) or all(
+            (
+                a_1[1] <= 0,
+                b_1[0] >= 0,
+            ),
+        ):
+            angle += np.pi
 
         rotation_matrix = np.array(
             [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]],
         )
-        new_b_2 = start_point_after + (np.dot(rotation_matrix, a_2) * b_2_mag * (-1, 1))
-        state.curves[curva_2_index].points[2] = np.append(new_b_2, 1)
+        new_b_2 = np.dot(rotation_matrix, a_2)
+
+        new_b_2_mag = new_b_2 * b_2_mag
+        new_point = start_point_after + new_b_2_mag
+
+        state.curves[curva_2_index].points[2] = np.append(new_point, 1)
         handle_g_1(state)
 
 
