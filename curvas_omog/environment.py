@@ -126,6 +126,10 @@ def handle_keybd_up(event: pygame.event.Event, state: EnvironmentState):
             state.active_curve_index = len(state.curves) - 1
         case pygame.K_KP_DIVIDE:
             handle_c_0(state)
+        case pygame.K_p:
+            handle_g_1(state)
+        case pygame.K_o:
+            handle_g_2(state)
         case pygame.K_KP2:
             state.curves = [Nurb()]
             state.active_curve_index = 0
@@ -166,9 +170,10 @@ def handle_mouse_btn_down(state: EnvironmentState, pos: tuple[int, int]):
 def handle_c_0(state: EnvironmentState):
     for curva_1, curva_2, curva_2_index in (
         (curva_1, state.curves[curva_1_index + 1], curva_1_index + 1)
-        for curva_1_index, curva_1 in enumerate(state.curves)
-        for curva_index, curva in enumerate(state.curves)
-
+        for curva_1_index, curva_1 in filter(
+            lambda x: len(x[1].points) != 0 and len(state.curves[x[0] + 1].points) != 0,
+            enumerate(state.curves[:-1]),
+        )
     ):
         end_point = curva_1.points[-1]
         start_point = curva_2.points[0]
@@ -176,6 +181,70 @@ def handle_c_0(state: EnvironmentState):
         state.curves[curva_2_index].points = (
             state.curves[curva_2_index].points - translation
         )
+
+
+def handle_g_1(state: EnvironmentState):
+    handle_c_0(state)
+    for curva_1, curva_2, curva_2_index in (
+        (curva_1, state.curves[curva_1_index + 1], curva_1_index + 1)
+        for curva_1_index, curva_1 in filter(
+            lambda x: len(x[1].points) != 0 and len(state.curves[x[0] + 1].points) != 0,
+            enumerate(state.curves[:-1]),
+        )
+    ):
+        end_point, end_point_before = curva_1.points[-1, :-1], curva_1.points[-2, :-1]
+        start_point, start_point_after = curva_2.points[0, :-1], curva_2.points[1, :-1]
+
+        direction = end_point - end_point_before
+        direction_mod = np.linalg.norm(direction)
+        direction /= direction_mod
+
+        position_dir = start_point_after - start_point
+        position_mag = np.linalg.norm(position_dir)
+
+        position = np.append(start_point + (direction * position_mag), 1)
+
+        state.curves[curva_2_index].points[1] = position
+
+
+def handle_g_2(state: EnvironmentState):
+    handle_g_1(state)
+    for curva_1, curva_2, curva_2_index in (
+        (curva_1, state.curves[curva_1_index + 1], curva_1_index + 1)
+        for curva_1_index, curva_1 in filter(
+            lambda x: len(x[1].points) != 0 and len(state.curves[x[0] + 1].points) != 0,
+            enumerate(state.curves[:-1]),
+        )
+    ):
+        end_point, end_point_before, end_point_before_before = (
+            curva_1.points[-1, :-1],
+            curva_1.points[-2, :-1],
+            curva_1.points[-3, :-1],
+        )
+        start_point, start_point_after, start_point_after_after = (
+            curva_2.points[0, :-1],
+            curva_2.points[1, :-1],
+            curva_2.points[2, :-1],
+        )
+
+        a_2 = start_point - start_point_after
+        a_2 /= np.linalg.norm(a_2)
+        b_2 = start_point_after_after - start_point_after
+        b_2_mag = np.linalg.norm(b_2)
+
+        a_1 = end_point - end_point_before
+        a_1 /= np.linalg.norm(a_1)
+        b_1 = end_point_before_before - end_point_before
+        b_1 /= np.linalg.norm(b_1)
+
+        angle = np.arccos(np.dot(a_1, b_1))
+
+        rotation_matrix = np.array(
+            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]],
+        )
+        new_b_2 = start_point_after + (np.dot(rotation_matrix, a_2) * b_2_mag * (-1, 1))
+        state.curves[curva_2_index].points[2] = np.append(new_b_2, 1)
+        handle_g_1(state)
 
 
 def draw_texts(state: EnvironmentState):
@@ -252,9 +321,6 @@ def draw(state: EnvironmentState):
             pygame.draw.line(state.screen, WHITE, point1, point2, 1)
     draw_texts(state)
     pygame.display.flip()
-
-
-# Create a knot vector
 
 
 class Environment:
